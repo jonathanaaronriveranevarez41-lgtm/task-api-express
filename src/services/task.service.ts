@@ -4,6 +4,9 @@ import type { Task } from '../models/task.js';
 
 export const listTasks = (): readonly Task[] => tasks;
 
+export const listPendingTasks = (): readonly Task[] =>
+  tasks.filter((task) => task.status === 'pending');
+
 export const findTaskById = (id: number): Task => {
   const task = tasks.find((item) => item.id === id);
   if (!task) throw new AppError(`No existe una tarea con el id ${id}.`, 404);
