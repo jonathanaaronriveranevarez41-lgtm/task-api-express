@@ -1,52 +1,27 @@
-import type { NextFunction, Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { AppError } from '../errors/app-error.js';
-import type { ApiErrorPayload } from '../types/api-error.js';
-
-const isInvalidJson = (error: unknown): boolean => {
-  if (!(error instanceof SyntaxError)) return false;
-  return 'status' in error && typeof error.status === 'number' && error.status === 400;
-};
-
-const sendError = (res: Response, status: number, payload: ApiErrorPayload): void => {
-  res.status(status).json({ error: payload });
-};
 
 export const errorHandler = (
-  error: unknown,
+  err: Error,
   _req: Request,
   res: Response,
   _next: NextFunction
 ): void => {
-  if (res.headersSent) {
-    _next(error);
-    return;
-  }
-
-  const requestId: string | undefined = res.locals.requestId;
-
-  if (error instanceof AppError) {
-    sendError(res, error.statusCode, {
-      code: error.code,
-      message: error.message,
-      details: error.details,
-      requestId
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({
+      error: {
+        code: err.code,
+        message: err.message
+      }
     });
     return;
   }
 
-  if (isInvalidJson(error)) {
-    sendError(res, 400, {
-      code: 'INVALID_JSON',
-      message: 'El cuerpo contiene JSON inválido.',
-      requestId
-    });
-    return;
-  }
-
-  console.error({ requestId, error });
-  sendError(res, 500, {
-    code: 'INTERNAL_ERROR',
-    message: 'Ocurrió un error interno.',
-    requestId
+  console.error('Error no controlado:', err);
+  res.status(500).json({
+    error: {
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Ocurrió un error interno en el servidor.'
+    }
   });
 };

@@ -1,13 +1,20 @@
+import type { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'node:crypto';
-import type { NextFunction, Request, Response } from 'express';
+
+declare global {
+  namespace Express {
+    interface Request {
+      id?: string;
+    }
+  }
+}
 
 export const requestContext = (
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ): void => {
-  const requestId = randomUUID();
-  res.locals.requestId = requestId;
-  res.setHeader('X-Request-Id', requestId);
+  req.id = req.header('X-Request-ID') ?? randomUUID();
+  res.setHeader('X-Request-ID', req.id);
   next();
 };
