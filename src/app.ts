@@ -1,6 +1,6 @@
 import express from 'express';
 import { healthRouter } from './routes/health.routes.js';
-import taskRouter from './routes/task.routes.js';
+import { taskRouter } from './routes/task.routes.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 
 const app = express();

@@ -1,22 +1,24 @@
 import { Router } from 'express';
 import {
-  getTasks,
   getTask,
-  postTask,
+  getTasks,
+  patchTask,
   patchTaskComplete,
+  postTask,
   removeTask
 } from '../controllers/task.controller.js';
+import { requireJson } from '../middlewares/require-json.middleware.js';
 import { validateTaskId } from '../middlewares/validate-task-id.middleware.js';
 import { validateTaskTitle } from '../middlewares/validate-task-title.middleware.js';
+import { validateTaskUpdate } from '../middlewares/validate-task-update.middleware.js';
 
-const router = Router();
+export const taskRouter = Router();
 
-router.param('id', validateTaskId);
+taskRouter.param('id', validateTaskId);
 
-router.get('/', getTasks);
-router.get('/:id', getTask);
-router.post('/', validateTaskTitle, postTask);
-router.patch('/:id/complete', patchTaskComplete);
-router.delete('/:id', removeTask);
-
-export default router;
+taskRouter.get('/', getTasks);
+taskRouter.get('/:id', getTask);
+taskRouter.post('/', requireJson, validateTaskTitle, postTask);
+taskRouter.patch('/:id', requireJson, validateTaskUpdate, patchTask);
+taskRouter.patch('/:id/complete', patchTaskComplete);
+taskRouter.delete('/:id', removeTask);
