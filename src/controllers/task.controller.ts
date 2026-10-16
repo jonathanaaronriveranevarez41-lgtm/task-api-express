@@ -9,7 +9,7 @@ import {
 } from '../services/task.service.js';
 
 export const getTasks = async (_req: Request, res: Response): Promise<void> => {
-  res.status(200).json({ data: await listTasks() });
+  res.status(200).json(await listTasks(res.locals.taskQuery));
 };
 
 export const getTask = async (_req: Request, res: Response): Promise<void> => {
@@ -30,17 +30,14 @@ export const patchTaskComplete = async (
 };
 
 export const patchTask = async (
-  req: Request,
+  _req: Request,
   res: Response
 ): Promise<void> => {
   const task = await updateTask(res.locals.taskId, res.locals.taskUpdate);
   res.status(200).json({ data: task });
 };
 
-export const removeTask = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const removeTask = async (_req: Request, res: Response): Promise<void> => {
   await deleteTask(res.locals.taskId);
   res.status(204).send();
 };
