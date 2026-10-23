@@ -1,24 +1,29 @@
 {
-  "name": "task-management-api",
+  "name": "task-api-express",
   "version": "1.0.0",
-  "description": "API REST para gestión de tareas con Express, TypeScript y MongoDB Atlas",
+  "private": true,
   "type": "module",
-  "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "check": "tsc --noEmit",
     "build": "tsc",
-    "start": "node dist/server.js",
-    "check": "tsc --noEmit"
+    "start": "node dist/server.js"
   },
   "dependencies": {
-    "dotenv": "^16.4.5",
-    "express": "^5.0.0",
-    "mongoose": "^8.24.4"
+    "@types/bcryptjs": "^3.0.0",
+    "bcryptjs": "3.0.3",
+    "dotenv": "17.2.2",
+    "express": "5.1.0",
+    "jose": "6.2.12",
+    "mongoose": "8.24.4"
   },
   "devDependencies": {
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.0.0",
-    "tsx": "^4.19.0",
-    "typescript": "^5.6.0"
+    "@types/express": "5.0.3",
+    "@types/node": "24.3.1",
+    "tsx": "4.20.5",
+    "typescript": "5.9.2"
+  },
+  "engines": {
+    "node": ">=20.19.0"
   }
 }

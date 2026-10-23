@@ -1,44 +1,38 @@
+import { env } from '../config/env.js';
 import mongoose from 'mongoose';
-import { loadEnvironment } from '../config/env.js';
-import { AppError } from '../errors/app-error.js';
 
-const env = loadEnvironment();
-
-export interface DatabaseHealth {
-  status: 'connected';
+interface ConnectOptions {
+  uri?: string;
+  dbName?: string;
 }
 
-const databaseUnavailable = (): AppError => {
-  return new AppError(
-    'La base de datos no está disponible.',
-    503,
-    'DATABASE_UNAVAILABLE'
-  );
-};
-
-export const connectDatabase = async (): Promise<void> => {
+export const connectDatabase = async (options?: ConnectOptions): Promise<void> => {
   try {
-    await mongoose.connect(env.mongodbUri, {
-      dbName: env.mongodbDbName
+    const mongoUri = options?.uri ?? env.MONGODB_URI;
+    const databaseName = options?.dbName ?? env.MONGODB_DB_NAME;
+
+    await mongoose.connect(mongoUri, {
+      dbName: databaseName,
     });
-    console.log('Conexión con MongoDB establecida.');
+
+    console.log(`Conectado exitosamente a MongoDB Atlas (${databaseName})`);
   } catch (error) {
-    console.error('Error al conectar con MongoDB:', error);
-    process.exit(1);
+    console.error('Error al conectar con la base de datos:', error);
+    throw error;
   }
 };
 
-export const checkDatabaseHealth = async (): Promise<DatabaseHealth> => {
-  const database = mongoose.connection.db;
-
-  if (mongoose.connection.readyState !== 1 || !database) {
-    throw databaseUnavailable();
-  }
-
+export const disconnectDatabase = async (): Promise<void> => {
   try {
-    await database.admin().ping();
-    return { status: 'connected' };
-  } catch {
-    throw databaseUnavailable();
+    await mongoose.disconnect();
+    console.log('Desconexión de MongoDB exitosa.');
+  } catch (error) {
+    console.error('Error al desconectar de la base de datos:', error);
+    throw error;
   }
+};
+
+export const checkDatabaseHealth = (): boolean => {
+  // readyState === 1 significa que está conectado a la base de datos
+  return mongoose.connection.readyState === 1;
 };
