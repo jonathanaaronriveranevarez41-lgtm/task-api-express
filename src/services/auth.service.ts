@@ -3,6 +3,7 @@ import { AppError } from '../errors/app-error.js';
 import type { User } from '../models/user.js';
 import {
   createUserDocument,
+  findUserDocumentById,
   findUserDocumentByEmail,
   type UserDocument
 } from '../repositories/user.repository.js';
@@ -15,7 +16,8 @@ import type {
 import { hashPassword, verifyPassword } from './password.service.js';
 import { createAccessToken } from './token.service.js';
 
-const DUMMY_PASSWORD_HASH = '$2b$12$ryC/a3t1ml7fqF6j4w3Z.OpHQerUsIQUPQYXvd4WSgCRuikv61F82';
+const DUMMY_PASSWORD_HASH =
+  '$2b$12$ryC/a3t1ml7fqF6j4w3Z.OpHQerUsIQUPQYXvd4WSgCRuikv61F82';
 
 const toUser = (document: UserDocument): User => ({
   id: document._id.toString(),
@@ -53,11 +55,9 @@ export const loginUser = async (input: LoginInput): Promise<LoginResult> => {
   const document = await findUserDocumentByEmail(email, true);
   const passwordHash = document?.passwordHash ?? DUMMY_PASSWORD_HASH;
   const validPassword = await verifyPassword(input.password, passwordHash);
-
   if (!document || !validPassword) {
     throw new AppError('El correo o la contraseña son incorrectos.', 401, 'INVALID_CREDENTIALS');
   }
-
   const user = toUser(document);
   return {
     user,
@@ -65,4 +65,16 @@ export const loginUser = async (input: LoginInput): Promise<LoginResult> => {
     tokenType: 'Bearer',
     expiresIn: env.JWT_EXPIRES_IN
   };
+};
+
+export const getAuthenticatedUser = async (userId: string): Promise<User> => {
+  const document = await findUserDocumentById(userId);
+  if (!document) {
+    throw new AppError(
+      'La cuenta asociada al token ya no está disponible.',
+      401,
+      'AUTHENTICATED_USER_NOT_FOUND'
+    );
+  }
+  return toUser(document);
 };

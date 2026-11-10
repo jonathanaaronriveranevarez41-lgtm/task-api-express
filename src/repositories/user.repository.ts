@@ -15,7 +15,7 @@ const isDuplicateKeyError = (error: unknown): boolean =>
   typeof error === 'object' &&
   error !== null &&
   'code' in error &&
-  error.code === 11_000;
+  (error as { code: number }).code === 11000;
 
 const mapPersistenceError = (error: unknown): AppError => {
   if (error instanceof AppError) return error;
@@ -63,7 +63,24 @@ export const findUserDocumentByEmail = async (
     return query;
   });
 
+export const findUserDocumentById = async (
+  id: string
+): Promise<UserDocument | null> =>
+  execute(async () => UserModel.findById(id));
+
 export const createUserDocument = async (
   data: CreateUserRecord
 ): Promise<UserDocument> =>
   execute(async () => UserModel.create(data));
+
+export const setUserRoleByEmail = async (
+  email: string,
+  role: UserRole
+): Promise<UserDocument | null> =>
+  execute(async () =>
+    UserModel.findOneAndUpdate(
+      { email },
+      { $set: { role } },
+      { new: true, runValidators: true }
+    )
+  );
