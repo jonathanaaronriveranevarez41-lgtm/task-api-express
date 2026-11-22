@@ -37,7 +37,6 @@ services:
   - type: web
     name: task-client-web-jonathan
     runtime: static
-    plan: free
     buildCommand: pnpm --dir client install --frozen-lockfile && pnpm --dir client build
     staticPublishPath: client/dist
     routes:
