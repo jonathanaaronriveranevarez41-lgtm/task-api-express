@@ -1,4 +1,4 @@
-@'
+$yaml = @'
 services:
 - type: web
 name: task-api-web-jonathan
@@ -48,7 +48,5 @@ routes:
 envVars:
   - key: VITE_API_URL
     sync: false
-'@ | Set-Content -Path .\render.yaml -Encoding utf8
-git add render.yaml
-git commit -m "chore: agrega render.yaml en la raiz"
-git push origin ec3-a12-despliegue-liberacion
+'@
+[System.IO.File]::WriteAllText((Join-Path (Get-Location) "render.yaml"), $yaml, [System.Text.UTF8Encoding]::new($false))
