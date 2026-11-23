@@ -37,7 +37,7 @@ services:
   - type: web
     name: task-client-web-jonathan
     runtime: static
-    buildCommand: node client/build.mjs
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter task-manager-frontend build
     staticPublishPath: client/dist
     routes:
       - type: rewrite

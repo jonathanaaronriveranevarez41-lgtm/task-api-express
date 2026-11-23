@@ -11,9 +11,9 @@
     "role:set": "tsx src/scripts/set-user-role.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "client:dev": "node client/dev.mjs",
-    "client:check": "node --check client/app.js && node --check client/build.mjs",
-    "client:build": "node client/build.mjs",
+    "client:dev": "pnpm --filter task-manager-frontend dev --host 127.0.0.1",
+    "client:check": "pnpm --filter task-manager-frontend exec tsc -b && pnpm --filter task-manager-frontend lint",
+    "client:build": "pnpm --filter task-manager-frontend build",
     "verify": "pnpm check && pnpm test && pnpm build && pnpm client:check && pnpm client:build"
   },
   "dependencies": {
