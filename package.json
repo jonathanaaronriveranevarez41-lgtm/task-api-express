@@ -11,9 +11,9 @@
     "role:set": "tsx src/scripts/set-user-role.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "client:dev": "pnpm --dir client dev",
-    "client:check": "pnpm --dir client check",
-    "client:build": "pnpm --dir client build",
+    "client:dev": "node client/dev.mjs",
+    "client:check": "node --check client/app.js && node --check client/build.mjs",
+    "client:build": "node client/build.mjs",
     "verify": "pnpm check && pnpm test && pnpm build && pnpm client:check && pnpm client:build"
   },
   "dependencies": {
