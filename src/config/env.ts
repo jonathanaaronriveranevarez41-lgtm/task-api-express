@@ -54,8 +54,10 @@ const parseEnvironment = (): 'development' | 'test' | 'production' => {
   return value;
 };
 
-const parseHttpUrl = (name: string): string => {
-  const value = requireValue(name).replace(/\/$/, '');
+const parseHttpUrl = (name: string, fallback?: string): string => {
+  const rawValue = process.env[name]?.trim() || fallback;
+  if (!rawValue) throw new Error(`Falta la variable de entorno ${name}.`);
+  const value = rawValue.replace(/\/$/, '');
   let url: URL;
   try {
     url = new URL(value);
@@ -68,11 +70,16 @@ const parseHttpUrl = (name: string): string => {
   return value;
 };
 
+const publicApiUrl = parseHttpUrl(
+  'PUBLIC_API_URL',
+  process.env.RENDER_EXTERNAL_URL?.trim(),
+);
+
 export const env = Object.freeze({
   NODE_ENV: parseEnvironment(),
   APP_VERSION: process.env.APP_VERSION?.trim() || '1.0.0',
   PORT: parsePort(process.env.PORT),
-  PUBLIC_API_URL: parseHttpUrl('PUBLIC_API_URL'),
+  PUBLIC_API_URL: publicApiUrl,
   TRUST_PROXY_HOPS: parseNonNegativeInteger('TRUST_PROXY_HOPS', '0'),
   MONGODB_URI: requireValue('MONGODB_URI'),
   MONGODB_DB_NAME: requireValue('MONGODB_DB_NAME'),
@@ -80,7 +87,7 @@ export const env = Object.freeze({
   JWT_EXPIRES_IN: parseExpiration(),
   JWT_ISSUER: process.env.JWT_ISSUER?.trim() || 'task-api-express',
   JWT_AUDIENCE: process.env.JWT_AUDIENCE?.trim() || 'task-api-client',
-  CORS_ORIGIN: parseHttpUrl('CORS_ORIGIN'),
+  CORS_ORIGIN: parseHttpUrl('CORS_ORIGIN', publicApiUrl),
   AUTH_RATE_LIMIT_WINDOW_MS: parsePositiveInteger(
     'AUTH_RATE_LIMIT_WINDOW_MS',
     '900000'

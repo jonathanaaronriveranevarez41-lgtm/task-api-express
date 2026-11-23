@@ -1,5 +1,4 @@
-packages:
-  - client
+packages: []
 
 allowBuilds:
   '@scarf/scarf': false
