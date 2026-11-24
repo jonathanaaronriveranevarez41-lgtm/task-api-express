@@ -33,8 +33,15 @@ export const openApiDocument: Record<string, unknown> = {
                   properties: {
                     data: {
                       type: 'object',
-                      required: ['status'],
-                      properties: { status: { type: 'string', example: 'up' } }
+                      required: ['status', 'version', 'environment'],
+                      properties: {
+                        status: { type: 'string', const: 'up' },
+                        version: { type: 'string', example: '1.0.0' },
+                        environment: {
+                          type: 'string',
+                          enum: ['development', 'test', 'production']
+                        }
+                      }
                     }
                   }
                 }
@@ -60,7 +67,9 @@ export const openApiDocument: Record<string, unknown> = {
                     data: {
                       type: 'object',
                       required: ['status'],
-                      properties: { status: { type: 'string', const: 'up' } }
+                      properties: {
+                        status: { type: 'string', enum: ['up', 'down'] }
+                      }
                     }
                   }
                 }

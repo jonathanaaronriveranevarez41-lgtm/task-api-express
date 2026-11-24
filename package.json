@@ -6,7 +6,7 @@
   "packageManager": "pnpm@11.22.0",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "check": "tsc --noEmit && tsc -p tsconfig.test.json --noEmit",
+    "check": "tsc --noEmit && tsc -p src/tsconfig.test.json --noEmit",
     "build": "tsc",
     "start": "node dist/server.js",
     "role:set": "tsx src/scripts/set-user-role.ts",
